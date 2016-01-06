@@ -1,0 +1,14 @@
+{
+    "bundles": {
+        "controllers": [
+            "controller-info",
+            "controller-user"
+        ]
+    },
+    "paths": {
+        "main": "/lib/main",
+        "server": "/lib/server",
+        "user": "middleware-user",
+        "logger": "lib-logger"
+    }
+}

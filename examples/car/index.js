@@ -1,0 +1,1 @@
+require('../../lib').install(require('./injective')).create().require(module, 'main');
