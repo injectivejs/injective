@@ -1,0 +1,11 @@
+{
+    "bundles": {
+        "group_a": [
+            "my_util",
+            "another_lib"
+        ]
+    },
+    "paths": {
+        "my_util": "nice_util"
+    }
+}

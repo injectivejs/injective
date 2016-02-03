@@ -11,6 +11,10 @@
     "dependencies": {
         "debug": "^2.2.0"
     },
+    "devDependencies": {
+        "expect.js": "latest",
+        "mocha": "latest"
+    },
     "engines": {
         "node": "~0.12.1",
         "npm": "~1.4.28"

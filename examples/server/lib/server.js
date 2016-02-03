@@ -1,5 +1,5 @@
 var Router = require('router');
-var logger;
+var logger = console;
 
 module.exports = exports = Server;
 exports['@type'] = 'constructor';

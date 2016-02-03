@@ -1,4 +1,4 @@
-var logger;
+var logger = console;
 
 module.exports = exports = Car;
 exports['@type'] = 'constructor';
