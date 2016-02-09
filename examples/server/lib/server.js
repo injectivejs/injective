@@ -4,25 +4,23 @@ var logger = console;
 module.exports = exports = Server;
 exports['@type'] = 'constructor';
 exports['@singleton'] = true;
-exports['@require'] = ['injective'];
-exports['@inject'] = function(Logger) {
-    logger = new Logger('Server');
-};
-exports['@inject']['@require'] = ['logger'];
+exports['@require'] = ['injective', 'logger'];
 
-function Server(injective) {
+function Server(injective, Logger) {
     this.injective = injective;
+    this.logger = new Logger('Server');
 }
 
 Server.prototype.handle = function(request, response) {
     logger.log('Received request with path: ' + request.path);
     var router = new Router();
-    var injective = this.injective.create();
-    injective.define('router', router);
-    injective.define('request', request);
-    injective.define('response', response);
-    injective.require(module, 'controllers');
-    router.handle(request, response);
+    this.injective.create()
+        .define('router', router)
+        .define('request', request)
+        .define('response', response)
+        .require('controllers').then(function() {
+            router.handle(request, response);
+        });
 };
 
 Server.prototype.listen = function(port) {

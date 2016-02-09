@@ -3,20 +3,21 @@ var logger = console;
 module.exports = exports = Car;
 exports['@type'] = 'constructor';
 exports['@singleton'] = true;
-exports['@require'] = ['engine', './tires'];
-exports['@inject'] = function(Logger) {
-    logger = new Logger('Car');
-};
-exports['@inject']['@require'] = ['logger'];
+exports['@require'] = ['logger', 'engine', './tires', 'addons'];
 
-function Car(engine, tires) {
+function Car(Logger, engine, tires, addons) {
+    var self = this;
+    this.logger = new Logger('Car');
     this.engine = engine;
     this.tires = tires;
     this.addons = [];
+    addons.forEach(function(addon) {
+        self.installAddon(addon);
+    });
 }
 
 Car.prototype.drive = function() {
-    logger.log('Driving');
+    this.logger.log('Driving');
 };
 
 Car.prototype.installAddon = function(addon) {
@@ -24,9 +25,10 @@ Car.prototype.installAddon = function(addon) {
 };
 
 Car.prototype.showCondition = function() {
-    logger.log('Engine condition: ' + this.engine.getCondition());
-    logger.log('Tires condition: ' + this.tires.getCondition());
+    var self = this;
+    this.logger.log('Engine condition: ' + this.engine.getCondition());
+    this.logger.log('Tires condition: ' + this.tires.getCondition());
     this.addons.forEach(function(addon) {
-        logger.log(addon.name + ' condition: ' + addon.getCondition());
+        self.logger.log(addon.name + ' condition: ' + addon.getCondition());
     });
 };
