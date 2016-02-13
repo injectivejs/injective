@@ -2,8 +2,8 @@ var logger = console;
 
 module.exports = exports = Car;
 exports['@type'] = 'constructor';
-exports['@singleton'] = true;
 exports['@require'] = ['logger', 'engine', './tires', 'addons'];
+exports['@singleton'] = true;
 
 function Car(Logger, engine, tires, addons) {
     var self = this;

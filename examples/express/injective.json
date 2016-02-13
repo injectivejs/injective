@@ -7,7 +7,7 @@
     },
     "paths": {
         "main": "/lib/main",
-        "server": "/lib/server",
+        "app": "/lib/app",
         "user": "middleware-user",
         "logger": "lib-logger"
     }
