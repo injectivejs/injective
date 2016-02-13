@@ -2,7 +2,7 @@
     "name": "injective",
     "version": "0.0.3",
     "author": "Mau Ka Ming <ahmautom@gmail.com>",
-    "description": "Dependency injection",
+    "description": "Dependency injection for node.js",
     "main": "lib",
     "repository": {
         "type": "git",
