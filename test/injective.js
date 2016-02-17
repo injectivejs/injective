@@ -1,18 +1,29 @@
-var expect = require('expect.js');
+var chai = require('chai');
+var chaiAsPromised = require('chai-as-promised');
 var Injective = require('../lib');
 var config = require('./assets/injective');
 var module = require('./assets/index');
+chai.use(chaiAsPromised);
+var expect = chai.expect;
 
 describe('Injective', function() {
+    beforeEach(function() {
+        this.injective = new Injective(module, config);
+    });
+
     describe('isInstantiable()', function() {
         it('returns false if module is non-instantiable', function() {
-            expect(Injective.isInstantiable({})).to.be(false);
+            expect(Injective.isInstantiable(function() {})).to.equal(false);
+        });
+
+        it('returns false if module is not a function', function() {
+            expect(Injective.isInstantiable({})).to.equal(false);
         });
 
         it('returns true if module is instantiable', function() {
-            expect(Injective.isInstantiable({
-                '@type': 'factory'
-            })).to.be(true);
+            var instantiable = function() {};
+            instantiable['@type'] = 'factory';
+            expect(Injective.isInstantiable(instantiable)).to.equal(true);
         });
     });
 
@@ -20,151 +31,133 @@ describe('Injective', function() {
         it('new context inherits instances from parent context', function() {
             var instance1 = {};
             var instance2 = {};
-            var injective = new Injective(module);
-            injective.define('instance1', instance1);
-            var injective_ = injective.create();
-            injective_.define('instance2', instance2);
-
-            return injective_.require('instance1').then(function(instance) {
-                expect(instance).to.be(instance1);
-                return injective_.require('instance2');
-            }).then(function(instance) {
-                expect(instance).to.be(instance2);
-                return injective.require('instance2')
-            }).catch(function(err) {
-                expect(err).not.to.be(undefined);
-            });
+            this.injective.set('instance1', instance1);
+            var injective_ = this.injective.create();
+            injective_.set('instance2', instance2);
+            return Promise.all([
+                expect(injective_.import('instance1')).to.eventually.equal(instance1),
+                expect(injective_.import('instance2')).to.eventually.equal(instance2),
+                expect(this.injective.import('instance2')).to.be.rejected
+            ]);
         });
 
         it('new context inherits config from parent context', function() {
-            var injective = new Injective(module, config);
-            var injective_ = injective.create();
-            return injective_.require('my_util').then(function(instance) {
-                expect(instance).not.to.be(undefined);
-            });
+            var injective_ = this.injective.create();
+            return expect(injective_.import('my_util')).not.to.eventually.equal(undefined);
         });
     });
 
-    describe('define()', function() {
-        it('define instance', function() {
-            var instance1 = {};
-            var injective = new Injective(module);
-            injective.define('instance1', instance1);
-            return injective.require('instance1').then(function(instance) {
-                expect(instance).to.be(instance1);
-            });
+    describe('set() and get()', function() {
+        it('Setting a module can be get by both get() and import()', function() {
+            var instance = {};
+            this.injective.set('instance', instance);
+            expect(this.injective.get('instance')).to.equal(instance);
+            return expect(this.injective.import('instance')).to.eventually.equal(instance);
         });
 
         it('defined instance is always singleton', function() {
-            var instance1 = {};
-            var injective = new Injective(module);
-            injective.define('instance', instance1);
-            return injective.require('instance').then(function(instance) {
-                expect(instance).to.be(instance1);
-                return injective.require('instance');
-            }).then(function(instance) {
-                expect(instance).to.be(instance1);
+            var self = this;
+            var instance = {};
+            this.injective.set('instance', instance);
+            return expect(this.injective.import('instance')).to.eventually.equal(instance).then(function() {
+                return expect(self.injective.import('instance')).to.eventually.equal(instance);
             });
         });
     });
 
-    describe('require()', function() {
-        beforeEach(function() {
-            this.injective = new Injective(module, config);
+    describe('has()', function() {
+        it('whether a module is defined in the runtime context', function() {
+            var instance = {};
+            this.injective.set('instance', instance);
+            expect(this.injective.has('instance')).to.equal(true);
+            expect(this.injective.has('not_exist')).to.equal(false);
         });
+    });
 
+    describe('delete()', function() {
+        it('delete module from runtime context', function() {
+            var instance = {};
+            this.injective.set('instance', instance);
+            this.injective.delete('instance');
+            expect(this.injective.has('instance')).to.equal(false);
+        });
+    });
+
+    describe('import()', function() {
         describe('resolve dependencies', function() {
             it('using bundles defined in config', function() {
-                return this.injective.require('group_a').then(function(instance) {
-                    expect(instance).to.have.length(2);
-                });
+                return expect(this.injective.import('group_a')).to.eventually.have.length(2);
             });
 
             it('using paths defined in config', function() {
-                return this.injective.require('my_util').then(function(instance) {
-                    expect(instance).not.to.be(undefined);
-                });
+                return expect(this.injective.import('my_util')).not.to.eventually.equal(undefined);
             });
 
             it('replace by paths defined in config', function() {
-                return this.injective.require('my_util/index').then(function(instance) {
-                    expect(instance).not.to.be(undefined);
-                });
+                return expect(this.injective.import('my_util/index')).not.to.eventually.equal(undefined);
             });
 
             it('using relative path', function() {
-                return this.injective.require('./lib/factory').then(function(instance) {
-                    expect(instance).not.to.be(undefined);
-                });
+                return expect(this.injective.import('./lib/factory')).not.to.eventually.equal(undefined);
             });
 
             // This test case assume the current directory is the project directory
             it('using absolute path will get resolved relative to current directory', function() {
-                return this.injective.require('/test/assets/lib/factory').then(function(instance) {
-                    expect(instance).not.to.be(undefined);
-                });
+                return expect(this.injective.import('/test/assets/lib/factory')).not.to.eventually.equal(undefined);
             });
 
             it('fallback to native require if nothing match', function() {
-                return this.injective.require('nice_util').then(function(instance) {
-                    expect(instance).not.to.be(undefined);
-                });
+                return expect(this.injective.import('nice_util')).not.to.eventually.equal(undefined);
             });
 
             it('using the special "injective" dependency will return the injective instance in the current context', function() {
-                return this.injective.require('./lib/injective').then(function(instance) {
-                    expect(instance).not.to.be(undefined);
-                });
+                return expect(this.injective.import('./lib/injective')).not.to.eventually.equal(undefined);
             });
         });
 
         describe('create instance', function() {
             it('by a factory function', function() {
                 var self = this;
-                return this.injective.require('./lib/factory').then(function(instance) {
-                    expect(instance()).to.be(1);
-                    expect(instance()).to.be(2);
-                    return self.injective.require('./lib/factory');
+                return this.injective.import('./lib/factory').then(function(instance) {
+                    expect(instance()).to.equal(1);
+                    expect(instance()).to.equal(2);
+                    return self.injective.import('./lib/factory');
                 }).then(function(instance) {
-                    expect(instance()).to.be(1);
-                    expect(instance()).to.be(2);
+                    expect(instance()).to.equal(1);
+                    expect(instance()).to.equal(2);
                 });
             });
 
             it('by a constructor', function() {
                 var self = this;
-                return this.injective.require('./lib/constructor').then(function(instance) {
-                    expect(instance.count).to.be(0);
+                return this.injective.import('./lib/constructor').then(function(instance) {
+                    expect(instance.count).to.equal(0);
                     instance.increment();
-                    expect(instance.count).to.be(1);
-                    return self.injective.require('./lib/constructor');
+                    expect(instance.count).to.equal(1);
+                    return self.injective.import('./lib/constructor');
                 }).then(function(instance) {
-                    expect(instance.count).to.be(0);
+                    expect(instance.count).to.equal(0);
                     instance.increment();
-                    expect(instance.count).to.be(1);
+                    expect(instance.count).to.equal(1);
                 });
             });
 
             it('will automatically resolve if it is a promise', function() {
-                return this.injective.require('./lib/promise').then(function(instance) {
-                    expect(instance).to.be(1);
-                });
+                return expect(this.injective.import('./lib/promise')).to.eventually.equal(1);
             });
         });
 
         describe('singleton', function() {
             it('should always return the same instance', function() {
-                return this.injective.require(['./lib/singleton', './lib/singleton']).then(function(instance) {
-                    expect(instance[0]).to.be(instance[1]);
+                return this.injective.import(['./lib/singleton', './lib/singleton']).then(function(instance) {
+                    expect(instance[0]).to.equal(instance[1]);
                 });
             });
 
             it('consecutive require should always return the same instance', function() {
                 var self = this;
-                return this.injective.require('./lib/singleton').then(function(instance) {
-                    return self.injective.require('./lib/singleton').then(function(instance2) {
-                        expect(instance).to.be(instance2);
-                    });
+                return this.injective.import('./lib/singleton').then(function(instance) {
+                    return expect(self.injective.import('./lib/singleton')).to.eventually.equal(instance);
                 });
             });
         });

@@ -1,6 +1,6 @@
 module.exports = exports = Counter;
 exports['@type'] = 'constructor';
-exports['@require'] = ['./factory'];
+exports['@inject'] = ['./factory'];
 
 function Counter(counter) {
     this.counter = counter;

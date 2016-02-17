@@ -1,8 +1,8 @@
 module.exports = exports = main;
 exports['@type'] = 'factory';
-exports['@require'] = ['car'];
+exports['@inject'] = ['car'];
 
 function main(car) {
-    car.showCondition();
     car.drive();
+    car.showCondition();
 }

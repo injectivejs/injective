@@ -2,7 +2,7 @@ var express = require('express');
 
 module.exports = exports = factory;
 exports['@type'] = 'factory';
-exports['@require'] = ['injective', 'logger'];
+exports['@inject'] = ['injective', 'logger'];
 exports['@singleton'] = true;
 
 function factory(injective) {
@@ -10,10 +10,10 @@ function factory(injective) {
     app.use(function(req, res, next) {
         var router = express.Router();
         injective.create()
-            .define('router', router)
-            .define('request', req)
-            .define('response', res)
-            .require('controllers').then(function() {
+            .set('router', router)
+            .set('request', req)
+            .set('response', res)
+            .import('controllers').then(function() {
                 router(req, res, next);
             }).catch(next);
     });

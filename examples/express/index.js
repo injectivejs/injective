@@ -1,1 +1,1 @@
-require('../../lib')(module, require('./injective')).require('main');
+require('../../lib')(module, require('./injective')).import('main');

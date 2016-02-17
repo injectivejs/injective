@@ -1,6 +1,6 @@
 module.exports = exports = factory;
 exports['@type'] = 'factory';
-exports['@require'] = ['my_util'];
+exports['@inject'] = ['my_util'];
 
 function factory(util) {
     var count = 0;

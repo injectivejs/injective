@@ -1,7 +1,7 @@
 module.exports = exports = factory;
 exports['@type'] = 'factory';
-exports['@require'] = ['injective'];
+exports['@inject'] = ['injective'];
 
 function factory(injective) {
-    return injective.require('./factory');
+    return injective.import('./factory');
 }
