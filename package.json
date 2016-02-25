@@ -1,14 +1,26 @@
 {
     "name": "injective",
     "version": "0.0.3",
-    "author": "Mau Ka Ming <ahmautom@gmail.com>",
-    "description": "Dependency injection for node.js",
-    "main": "lib",
+    "author": "Mau Ka Ming <ahmautom@gmail.com> (https://www.facebook.com/maukaming)",
+    "description": "Dependency injection for Node.js",
+    "keywords": [
+        "dependency injection",
+        "ioc",
+        "application context",
+        "module loader"
+    ],
     "repository": {
         "type": "git",
-        "url": "https://github.com/ahmautom/injective"
+        "url": "https://github.com/injectivejs/injective"
     },
+    "bugs": {
+        "url": "https://github.com/injectivejs/injective/issues"
+    },
+    "license": "MIT",
+    "bin": "bin/injective",
+    "main": "lib",
     "dependencies": {
+        "commander": "^2.9.0",
         "debug": "^2.2.0"
     },
     "devDependencies": {
@@ -17,7 +29,6 @@
         "mocha": "^2.4.5"
     },
     "engines": {
-        "node": "~0.12.1",
-        "npm": "~1.4.28"
+        "node": ">= 0.12.0"
     }
 }

@@ -1,4 +1,5 @@
 {
+    "main": "main",
     "bundles": {
         "controllers": [
             "controller-info",
@@ -6,8 +7,8 @@
         ]
     },
     "paths": {
-        "main": "/lib/main",
-        "app": "/lib/app",
+        "main": "./lib/main",
+        "app": "./lib/app",
         "user": "middleware-user",
         "logger": "lib-logger"
     }

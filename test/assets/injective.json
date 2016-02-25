@@ -6,6 +6,7 @@
         ]
     },
     "paths": {
-        "my_util": "nice_util"
+        "my_util": "nice_util",
+        "factory": "./test/assets/lib/factory"
     }
 }

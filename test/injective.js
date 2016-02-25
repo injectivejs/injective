@@ -102,8 +102,8 @@ describe('Injective', function() {
             });
 
             // This test case assume the current directory is the project directory
-            it('using absolute path will get resolved relative to current directory', function() {
-                return expect(this.injective.import('/test/assets/lib/factory')).not.to.eventually.equal(undefined);
+            it('using relative path in config will get resolved relative to current directory', function() {
+                return expect(this.injective.import('factory')).not.to.eventually.equal(undefined);
             });
 
             it('fallback to native require if nothing match', function() {
