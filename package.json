@@ -17,6 +17,9 @@
         "url": "https://github.com/injectivejs/injective/issues"
     },
     "license": "MIT",
+    "scripts": {
+        "test": "mocha"
+    },
     "bin": "bin/injective",
     "main": "lib",
     "dependencies": {
