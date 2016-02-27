@@ -27,6 +27,18 @@ describe('Injective', function() {
         });
     });
 
+    describe('isInjectable()', function() {
+        it('returns false if module is non-injectable', function() {
+            expect(Injective.isInjectable({})).to.equal(false);
+        });
+
+        it('returns true if module is injectable', function() {
+            expect(Injective.isInjectable({
+                '@inject': []
+            })).to.equal(true);
+        });
+    });
+
     describe('create()', function() {
         it('new context inherits instances from parent context', function() {
             var instance1 = {};
@@ -89,6 +101,10 @@ describe('Injective', function() {
                 return expect(this.injective.import('group_a')).to.eventually.have.length(2);
             });
 
+            it('an array of dependency', function() {
+                return expect(this.injective.import(['my_util', 'another_lib'])).to.eventually.have.length(2);
+            });
+
             it('using paths defined in config', function() {
                 return expect(this.injective.import('my_util')).not.to.eventually.equal(undefined);
             });
@@ -117,28 +133,27 @@ describe('Injective', function() {
 
         describe('create instance', function() {
             it('by a factory function', function() {
-                var self = this;
-                return this.injective.import('./lib/factory').then(function(instance) {
+                return this.injective.import(['./lib/factory', './lib/factory']).then(function(instances) {
+                    var instance = instances[0];
+                    var instance1 = instances[1];
+                    expect(instance1).not.to.equal(instance);
                     expect(instance()).to.equal(1);
                     expect(instance()).to.equal(2);
-                    return self.injective.import('./lib/factory');
-                }).then(function(instance) {
-                    expect(instance()).to.equal(1);
-                    expect(instance()).to.equal(2);
+                    expect(instance1()).to.equal(1);
+                    expect(instance1()).to.equal(2);
                 });
             });
 
             it('by a constructor', function() {
-                var self = this;
-                return this.injective.import('./lib/constructor').then(function(instance) {
+                return this.injective.import(['./lib/constructor', './lib/constructor']).then(function(instances) {
+                    var instance = instances[0];
+                    var instance1 = instances[1];
                     expect(instance.count).to.equal(0);
                     instance.increment();
                     expect(instance.count).to.equal(1);
-                    return self.injective.import('./lib/constructor');
-                }).then(function(instance) {
-                    expect(instance.count).to.equal(0);
-                    instance.increment();
-                    expect(instance.count).to.equal(1);
+                    expect(instance1.count).to.equal(0);
+                    instance1.increment();
+                    expect(instance1.count).to.equal(1);
                 });
             });
 
@@ -160,6 +175,52 @@ describe('Injective', function() {
                     return expect(self.injective.import('./lib/singleton')).to.eventually.equal(instance);
                 });
             });
+        });
+    });
+
+    describe('fromObject()', function() {
+        it('injectable', function() {
+            var instance = {};
+            this.injective.set('instance', instance);
+            var injectable = {
+                '@inject': ['instance']
+            };
+            return expect(this.injective.fromObject(injectable)).to.eventually.equal(injectable);
+        });
+
+        describe('instantiable', function() {
+            it('factory', function() {
+                var instance = {};
+                var instantiable = function() {
+                    return instance;
+                };
+                instantiable['@type'] = 'factory';
+                return expect(this.injective.fromObject(instantiable)).to.eventually.equal(instance);
+            });
+
+            it('constructor', function() {
+                var Instance = function() {};
+                Instance['@type'] = 'constructor';
+                return this.injective.fromObject(Instance).then(function(instance) {
+                    expect(instance instanceof Instance).to.equal(true);
+                });
+            });
+        });
+
+        it('injectable + instantiable', function() {
+            var instance = {};
+            this.injective.set('instance', instance);
+            var instantiable = function(instance) {
+                return instance;
+            };
+            instantiable['@type'] = 'factory';
+            instantiable['@inject'] = ['instance'];
+            return expect(this.injective.fromObject(instantiable)).to.eventually.equal(instance);
+        });
+
+        it('plain object', function() {
+            var instance = {};
+            return expect(this.injective.fromObject(instance)).to.eventually.equal(instance);
         });
     });
 });
