@@ -12,35 +12,37 @@ describe('Injective', function() {
     });
 
     describe('isInstantiable()', function() {
-        it('returns false if module is non-instantiable', function() {
-            expect(Injective.isInstantiable(function() {})).to.equal(false);
+        it('should return false if module does not contain meta data', function() {
+            expect(Injective.isInstantiable(function() {})).to.be.false;
         });
 
-        it('returns false if module is not a function', function() {
-            expect(Injective.isInstantiable({})).to.equal(false);
+        it('should return false if module is not a function', function() {
+            expect(Injective.isInstantiable({
+                '@type': 'factory'
+            })).to.be.false;
         });
 
-        it('returns true if module is instantiable', function() {
+        it('should return true if module is instantiable', function() {
             var instantiable = function() {};
             instantiable['@type'] = 'factory';
-            expect(Injective.isInstantiable(instantiable)).to.equal(true);
+            expect(Injective.isInstantiable(instantiable)).to.be.true;
         });
     });
 
     describe('isInjectable()', function() {
         it('returns false if module is non-injectable', function() {
-            expect(Injective.isInjectable({})).to.equal(false);
+            expect(Injective.isInjectable({})).to.be.false;
         });
 
         it('returns true if module is injectable', function() {
             expect(Injective.isInjectable({
                 '@inject': []
-            })).to.equal(true);
+            })).to.be.true;
         });
     });
 
     describe('create()', function() {
-        it('new context inherits instances from parent context', function() {
+        it('should inherits instances from parent context while not affecting parent context', function() {
             var instance1 = {};
             var instance2 = {};
             this.injective.set('instance1', instance1);
@@ -53,21 +55,26 @@ describe('Injective', function() {
             ]);
         });
 
-        it('new context inherits config from parent context', function() {
+        it('should inherits config from parent context', function() {
             var injective_ = this.injective.create();
-            return expect(injective_.import('my_util')).not.to.eventually.equal(undefined);
+            return expect(injective_.import('my_util')).not.to.eventually.be.undefined;
         });
     });
 
-    describe('set() and get()', function() {
-        it('Setting a module can be get by both get() and import()', function() {
+    describe('set()', function() {
+        it('should be retrieved by get()', function() {
             var instance = {};
             this.injective.set('instance', instance);
             expect(this.injective.get('instance')).to.equal(instance);
+        });
+
+        it('should retrieved by import()', function() {
+            var instance = {};
+            this.injective.set('instance', instance);
             return expect(this.injective.import('instance')).to.eventually.equal(instance);
         });
 
-        it('defined instance is always singleton', function() {
+        it('should be singleton', function() {
             var self = this;
             var instance = {};
             this.injective.set('instance', instance);
@@ -77,21 +84,75 @@ describe('Injective', function() {
         });
     });
 
-    describe('has()', function() {
-        it('whether a module is defined in the runtime context', function() {
+    describe('get()', function() {
+        it('should retrieve instance defined by set()', function() {
             var instance = {};
             this.injective.set('instance', instance);
-            expect(this.injective.has('instance')).to.equal(true);
-            expect(this.injective.has('not_exist')).to.equal(false);
+            expect(this.injective.get('instance')).to.equal(instance);
+        });
+
+        it('should return undefined if instance not defined', function() {
+            expect(this.injective.get('instance')).to.be.undefined;
+        });
+    });
+
+    describe('has()', function() {
+        it('should tell whether a module is defined in the runtime context', function() {
+            var instance = {};
+            this.injective.set('instance', instance);
+            expect(this.injective.has('instance')).to.be.true;
+            expect(this.injective.has('not_exist')).to.be.false;
         });
     });
 
     describe('delete()', function() {
-        it('delete module from runtime context', function() {
+        it('shoulde delete module from runtime context', function() {
             var instance = {};
             this.injective.set('instance', instance);
             this.injective.delete('instance');
-            expect(this.injective.has('instance')).to.equal(false);
+            expect(this.injective.has('instance')).to.be.false;
+        });
+    });
+
+    describe('register()', function() {
+        describe('using meta data', function() {
+            it('should support factory', function() {
+                var instance = {};
+                var factory = function() {
+                    return instance;
+                };
+                factory['@type'] = 'factory';
+                this.injective.register('factory', factory);
+                return expect(this.injective.import('factory')).to.eventually.equal(instance);
+            });
+
+            it('should support constructor', function() {
+                var Constructor = function() {};
+                Constructor['@type'] = 'constructor';
+                this.injective.register('constructor', Constructor);
+                return expect(this.injective.import('constructor')).to.eventually.be.instanceof(Constructor);
+            });
+        });
+
+        describe('using options', function() {
+            it('should support factory', function() {
+                var instance = {};
+                var factory = function() {
+                    return instance;
+                };
+                this.injective.register('factory', factory, {
+                    type: 'factory'
+                });
+                return expect(this.injective.import('factory')).to.eventually.equal(instance);
+            });
+
+            it('should support constructor', function() {
+                var Constructor = function() {};
+                this.injective.register('constructor', Constructor, {
+                    type: 'constructor'
+                });
+                return expect(this.injective.import('constructor')).to.eventually.be.instanceof(Constructor);
+            });
         });
     });
 
@@ -106,28 +167,28 @@ describe('Injective', function() {
             });
 
             it('using paths defined in config', function() {
-                return expect(this.injective.import('my_util')).not.to.eventually.equal(undefined);
+                return expect(this.injective.import('my_util')).not.to.eventually.be.undefined;
             });
 
             it('replace by paths defined in config', function() {
-                return expect(this.injective.import('my_util/index')).not.to.eventually.equal(undefined);
+                return expect(this.injective.import('my_util/index')).not.to.eventually.be.undefined;
             });
 
             it('using relative path', function() {
-                return expect(this.injective.import('./lib/factory')).not.to.eventually.equal(undefined);
+                return expect(this.injective.import('./lib/factory')).not.to.eventually.be.undefined;
             });
 
             // This test case assume the current directory is the project directory
             it('using relative path in config will get resolved relative to current directory', function() {
-                return expect(this.injective.import('factory')).not.to.eventually.equal(undefined);
+                return expect(this.injective.import('factory')).not.to.eventually.be.undefined;
             });
 
             it('fallback to native require if nothing match', function() {
-                return expect(this.injective.import('nice_util')).not.to.eventually.equal(undefined);
+                return expect(this.injective.import('nice_util')).not.to.eventually.be.undefined;
             });
 
             it('using the special "injective" dependency will return the injective instance in the current context', function() {
-                return expect(this.injective.import('./lib/injective')).not.to.eventually.equal(undefined);
+                return expect(this.injective.import('./lib/injective')).not.to.eventually.be.undefined;
             });
         });
 
@@ -201,9 +262,7 @@ describe('Injective', function() {
             it('constructor', function() {
                 var Instance = function() {};
                 Instance['@type'] = 'constructor';
-                return this.injective.fromObject(Instance).then(function(instance) {
-                    expect(instance instanceof Instance).to.equal(true);
-                });
+                return expect(this.injective.fromObject(Instance)).to.eventually.be.instanceof(Instance);
             });
         });
 
