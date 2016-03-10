@@ -157,6 +157,17 @@ describe('Injective', function() {
         });
     });
 
+    describe('deregister()', function() {
+        it('should remove module previously registered by register() from registry', function() {
+            var Constructor = function() {};
+            this.injective.register('constructor', Constructor, {
+                type: 'constructor'
+            });
+            this.injective.deregister('constructor');
+            return expect(this.injective.import('constructor')).to.eventually.be.rejected;
+        });
+    });
+
     describe('import()', function() {
         describe('resolve dependencies', function() {
             it('using bundles defined in config', function() {
