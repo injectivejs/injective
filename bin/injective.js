@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 var path = require('path');
 var program = require('commander');
 var debug = require('debug')('injective-cli');
