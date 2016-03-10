@@ -1,6 +1,6 @@
 {
     "name": "injective",
-    "version": "0.0.3",
+    "version": "1.0.0",
     "author": "Mau Ka Ming <ahmautom@gmail.com> (https://www.facebook.com/maukaming)",
     "description": "Dependency injection for Node.js",
     "keywords": [
