@@ -20,7 +20,7 @@
     "scripts": {
         "test": "mocha"
     },
-    "bin": "bin/injective",
+    "bin": "bin/injective.js",
     "main": "lib",
     "dependencies": {
         "commander": "^2.9.0",
