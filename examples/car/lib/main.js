@@ -1,6 +1,6 @@
 module.exports = exports = main;
 exports['@type'] = 'factory';
-exports['@inject'] = ['car'];
+exports['@inject'] = ['./car'];
 
 function main(car) {
     car.drive();

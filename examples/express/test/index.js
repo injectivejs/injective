@@ -10,7 +10,7 @@ describe('app', function() {
 
     describe('GET /info', function() {
         it('should display welcome message', function(done) {
-            this.injective.import('app').then(function(app) {
+            this.injective.import('../lib/app').then(function(app) {
                 request(app)
                     .get('/info')
                     .expect(200)
@@ -22,7 +22,7 @@ describe('app', function() {
 
     describe('GET /user', function() {
         it('should display welcome message for userId=6894', function(done) {
-            this.injective.import('app').then(function(app) {
+            this.injective.import('../lib/app').then(function(app) {
                 request(app)
                     .get('/user?userId=6894')
                     .expect(200)
@@ -32,7 +32,7 @@ describe('app', function() {
         });
 
         it('should display welcome message for userId=9527', function(done) {
-            this.injective.import('app').then(function(app) {
+            this.injective.import('../lib/app').then(function(app) {
                 request(app)
                     .get('/user?userId=9527')
                     .expect(200)
@@ -42,7 +42,7 @@ describe('app', function() {
         });
 
         it('should handle user not found', function(done) {
-            this.injective.import('app').then(function(app) {
+            this.injective.import('../lib/app').then(function(app) {
                 request(app)
                     .get('/user?userId=whoami')
                     .expect(200)

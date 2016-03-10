@@ -2,7 +2,7 @@ var http = require('http');
 
 module.exports = exports = main;
 exports['@type'] = 'factory';
-exports['@inject'] = ['app', 'db', 'logger'];
+exports['@inject'] = ['./app', 'db', 'logger'];
 
 function main(app, db, Logger) {
     var logger = new Logger('Main');

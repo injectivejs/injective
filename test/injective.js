@@ -1,3 +1,4 @@
+var path = require('path');
 var chai = require('chai');
 var chaiAsPromised = require('chai-as-promised');
 var Injective = require('../lib');
@@ -180,7 +181,7 @@ describe('Injective', function() {
 
             // This test case assume the current directory is the project directory
             it('using absolute path', function() {
-                return expect(this.injective.import(process.cwd() + '/test/assets/lib/factory')).not.to.eventually.be.undefined;
+                return expect(this.injective.import(path.join(process.cwd(), 'test/assets/lib/factory'))).not.to.eventually.be.undefined;
             });
 
             it('fallback to native require if nothing match', function() {

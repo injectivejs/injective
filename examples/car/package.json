@@ -1,8 +1,8 @@
 {
-    "name": "injective-example-express",
+    "name": "injective-examples-car",
     "version": "1.0.0",
     "author": "Mau Ka Ming <ahmautom@gmail.com> (https://www.facebook.com/maukaming)",
-    "description": "Injectivejs express server example",
+    "description": "Injectivejs car example",
     "repository": {
         "type": "git",
         "url": "https://github.com/injectivejs/injective"
@@ -13,13 +13,6 @@
     "license": "MIT",
     "scripts": {
         "start": "node ../../bin/injective"
-    },
-    "dependencies": {
-        "express": "^4.13.4"
-    },
-    "devDependencies": {
-        "mocha": "latest",
-        "supertest": "^1.2.0"
     },
     "engines": {
         "node": ">= 0.12.0"

@@ -1,13 +1,11 @@
 {
-    "main": "main",
+    "main": "./lib/main",
     "bundles": {
         "addons": [
             "bumper"
         ]
     },
     "paths": {
-        "main": "./lib/main",
-        "car": "./lib/car",
         "engine": "component-engine",
         "bumper": "addon-bumper"
     }

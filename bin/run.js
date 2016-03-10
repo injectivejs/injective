@@ -35,9 +35,11 @@ function factory(injective, program) {
 
     function run(names, config) {
         var module = new Module('injective', null);
-        process.mainModule = module;
         module.paths = Module._nodeModulePaths(process.cwd());
-        Injective(module, config).import(names);
+        process.mainModule = module;
+        Injective(module, config).import(names).catch(function(err) {
+            console.error(err.stack);
+        });
     }
 
     return exports;
