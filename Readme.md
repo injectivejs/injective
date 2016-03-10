@@ -5,8 +5,8 @@
 
 Dependency injection for Node.js.
 
-``some_class.js``
 ```javascript
+// some_class.js
 module.exports = exports = SomeClass;
 exports['@type'] = 'constructor';
 exports['@inject'] = ['./greeter'];
@@ -19,8 +19,9 @@ SomeClass.prototype.doSomething = function(name) {
     this.greeter.greet(name);
 }
 ```
-``greeter.js``
+
 ```javascript
+// greeter.js
 module.exports = exports = greeter;
 exports['@type'] = 'factory';
 
@@ -32,8 +33,9 @@ function greeter() {
     };
 });
 ```
-``index.js``
+
 ```javascript
+// index.js
 var Injective = require('injective');
 var injective = new Injective(module);
 injective.import('./some_class').then(function(someClass) {
@@ -82,7 +84,7 @@ Car.prototype.drive = function() {
     this.logger.log('Driving');
 };
 ```
-
+The ``Engine`` is also a class which only need a logger.
 ```javascript
 // node_modules/component-engine/index.js
 module.exports = exports = Engine;
@@ -182,7 +184,7 @@ Dynamically register a module. You may separate the annotations into a ``meta`` 
 De-register a module
 ### create(): Injective
 Create a new runtime context on top of parent's runtime context (using prototype chain) and inherits from parent's config.
-### import(name: string | Array<string>): Promise<object | Array<object>>
+### import(name: string | Array&lt;string&gt;): Promise&lt;object | Array&lt;object&gt;&gt;
 Load and initantiate module.
 ### resolve(name: string): string | Array<string>
 Resolve the given path to the absolute path according to the config. Return an array of string if it resolve to a bundle.
@@ -231,12 +233,13 @@ module.exports['@onError'] = function(err) {
 ### Async initialization
 Injective support asynchronous initialization of a module. Simply use *factory* pattern to define a module and return a *promise*. Injective will use the resolved object as the instance.
 ```javascript
-module.exports = exports = config;
+module.exports = exports = factory;
 exports['@type'] = 'factory';
 exports['@singleton'] = true;
 
-function config() {
-    return Promise.resolve(1);
+function factory() {
+    var instance = ...
+    return Promise.resolve(instance);
 }
 ```
 ### The special ``injective`` dependency
