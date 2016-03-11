@@ -31,8 +31,6 @@ function factory(injective, program) {
             run(names.length <= 0 ? (config.main || process.cwd()) : names, config);
         });
 
-    module.exports = exports = run;
-
     function run(names, config) {
         var module = new Module('injective', null);
         module.paths = Module._nodeModulePaths(process.cwd());
@@ -42,5 +40,5 @@ function factory(injective, program) {
         });
     }
 
-    return exports;
+    return run;
 }
