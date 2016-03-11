@@ -31,7 +31,7 @@ function greeter() {
             console.log(text);
         }
     };
-});
+}
 ```
 
 ```javascript
