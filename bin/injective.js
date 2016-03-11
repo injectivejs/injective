@@ -8,12 +8,10 @@ var Injective = require('../lib');
 
 if (require.main === module) {
     program.version(pkg.version).description(pkg.description);
-    Injective(module).set('pkg', pkg).set('program', program).import(['./run', 'injective-cli']).catch(function(err) {
-        debug('Failed to load injective-cli: ' + err.message);
-    }).then(function(instances) {
+    var injective = Injective(module).set('pkg', pkg).set('program', program);
+    injective.import('./run').then(function(run) {
         // Default command
         if (!process.argv.slice(2).length) {
-            var run = instances[0];
             var config = {};
 
             try {
@@ -24,6 +22,10 @@ if (require.main === module) {
             return;
         }
 
-        program.parse(process.argv);
+        return injective.import('injective-cli').catch(function(err) {
+            debug('Failed to load injective-cli: ' + err.message);
+        }).then(function() {
+            program.parse(process.argv);
+        });
     });
 }
