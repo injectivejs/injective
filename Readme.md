@@ -48,10 +48,7 @@ injective.import('./some_class').then(function(someClass) {
 ```bash
 $ npm install injective
 ```
-Or you can use it globally
-```bash
-$ npm install -g injective
-```
+
 ## Getting start
 Let's look at the classic car & engine example to illustrate how it works.
 Assuming we have the following project structure.
@@ -228,6 +225,22 @@ You can define a error handler to handle error whenever a dependency is failed t
 module.exports['@onError'] = function(err) {
     console.error(err);
 };
+```
+## Command
+Injective comes with some handy commands. First install injective globally.
+```bash
+$ npm install -g injective
+```
+
+### run
+```shell
+injective run [--config <path>] [entryPoint...]
+```
+Run injective application from a given entry point(s). By default it tries to read ``injective.json`` from current directory, to override you can specify ``--config`` option. If the entry point omitted, it tries ``injective.json`` 's ``main`` then ``package.json``'s ``main``.
+
+If you already have a ``injective.json`` in current directory with ``main`` specified, simply
+```shell
+$ injective
 ```
 
 ## Advanced usage
