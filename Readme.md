@@ -2,6 +2,7 @@
 [![Travis Build](https://api.travis-ci.org/injectivejs/injective.svg "Travis Build")](https://travis-ci.org/injectivejs/injective)
 [![NPM Version](http://img.shields.io/npm/v/injective.svg?style=flat)](https://www.npmjs.org/package/injective)
 [![NPM Downloads](https://img.shields.io/npm/dm/injective.svg?style=flat)](https://www.npmjs.org/package/injective)
+[![Join the chat at https://gitter.im/injectivejs/injective](https://badges.gitter.im/injectivejs/injective.svg)](https://gitter.im/injectivejs/injective?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
 Dependency injection for Node.js.
 
